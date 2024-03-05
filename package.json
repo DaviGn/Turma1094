@@ -7,9 +7,11 @@
         "dev": "vite",
         "build": "tsc && vite build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "backend": "npx json-server db.json --watch"
     },
     "dependencies": {
+        "axios": "^1.6.7",
         "formik": "^2.4.5",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",

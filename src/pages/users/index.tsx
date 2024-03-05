@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import * as Yup from 'yup';
 
@@ -7,6 +7,8 @@ import Button from '../../components/button';
 import TextInput from '../../components/form/TextInput';
 import { FormikProvider, useFormik } from 'formik';
 import { User } from '../../interfaces/user';
+
+import axios from 'axios';
 
 interface CreateUserEntry {
     name: string;
@@ -28,8 +30,20 @@ function castToUser({ name, email }: CreateUserEntry): User {
     };
 }
 
+// componentDidMount - disparado quando o componente é exibido
+// componentWillMount - quando ia ser exibido em tela
+// componentDidUpdate - renderizado novamente (componentShouldUpdate)
+// componentWillUnmount - o componete vai ser destruído
+
 export default function Users() {
     const [users, setUsers] = useState<User[]>([]);
+
+    const [counter, setCounter] = useState(0);
+
+    async function loadUsers() {
+        const { data } = await axios.get<User[]>('http://localhost:3000/users');
+        setUsers(data);
+    }
 
     const form = useFormik<CreateUserEntry>({
         initialValues: {
@@ -45,9 +59,40 @@ export default function Users() {
         }
     });
 
+    useEffect(() => {
+        loadUsers();
+    }, []);
+
+    // useEffect(() => {
+    //     console.log('componentDidMount');
+    // }, []);
+
+    // useEffect(() => {
+    //     console.log('componentDidUpdate');
+
+    //     // componentWillUnmount
+    //     return () => {};
+    // }, [counter]);
+
+    // useEffect(() => {
+    //     console.log('Sempre sou executado!');
+    // });
+
     return (
         <>
             <Menu />
+
+            <div>
+                <h2>{counter}</h2>
+                <Button
+                    type="button"
+                    text="Incrementar"
+                    onClick={() => {
+                        setCounter((prev) => prev + 1);
+                    }}
+                />
+            </div>
+
             <h1>Users</h1>
             <div>
                 <FormikProvider value={form}>
