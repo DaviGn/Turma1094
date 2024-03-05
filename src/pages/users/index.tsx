@@ -3,12 +3,11 @@ import { v4 as uuid } from 'uuid';
 import * as Yup from 'yup';
 
 import Menu from '../../components/layout/menu';
-import Button from '../../components/button';
+import Button, { ButtonVariant } from '../../components/button';
 import TextInput from '../../components/form/TextInput';
 import { FormikProvider, useFormik } from 'formik';
 import { User } from '../../interfaces/user';
-
-import axios from 'axios';
+import { client } from '../../network/api';
 
 interface CreateUserEntry {
     name: string;
@@ -36,13 +35,15 @@ function castToUser({ name, email }: CreateUserEntry): User {
 // componentWillUnmount - o componete vai ser destruído
 
 export default function Users() {
+    const [isLoading, setIsLoading] = useState(true);
     const [users, setUsers] = useState<User[]>([]);
 
-    const [counter, setCounter] = useState(0);
-
     async function loadUsers() {
-        const { data } = await axios.get<User[]>('http://localhost:3000/users');
+        setIsLoading(true);
+        await new Promise((res) => setTimeout(res, 3000));
+        const { data } = await client.get<User[]>('users');
         setUsers(data);
+        setIsLoading(false);
     }
 
     const form = useFormik<CreateUserEntry>({
@@ -51,11 +52,13 @@ export default function Users() {
             email: ''
         },
         validationSchema,
-        onSubmit: (values, { resetForm }) => {
+        onSubmit: async (values, { resetForm }) => {
             const newUser = castToUser(values);
-            setUsers((prev) => [...prev, newUser]);
 
+            await client.post('users', newUser);
             resetForm();
+
+            loadUsers();
         }
     });
 
@@ -81,18 +84,6 @@ export default function Users() {
     return (
         <>
             <Menu />
-
-            <div>
-                <h2>{counter}</h2>
-                <Button
-                    type="button"
-                    text="Incrementar"
-                    onClick={() => {
-                        setCounter((prev) => prev + 1);
-                    }}
-                />
-            </div>
-
             <h1>Users</h1>
             <div>
                 <FormikProvider value={form}>
@@ -109,11 +100,13 @@ export default function Users() {
                     <div>
                         <Button
                             type="button"
+                            variant={ButtonVariant.cancel}
                             text="Cancelar"
                             onClick={form.resetForm}
                         />
                         <Button
                             type="button"
+                            variant={ButtonVariant.submit}
                             text="Salvar"
                             onClick={form.submitForm}
                         />
@@ -121,14 +114,18 @@ export default function Users() {
                 </FormikProvider>
             </div>
             <div>
-                <ul>
-                    {users.map((usr) => (
-                        <li key={usr.id}>
-                            Id: {usr.id} - Nome: {usr.name} - E-mail:{' '}
-                            {usr.email}
-                        </li>
-                    ))}
-                </ul>
+                {isLoading ? (
+                    <h3>Carregando...</h3>
+                ) : (
+                    <ul>
+                        {users.map((usr) => (
+                            <li key={usr.id}>
+                                Id: {usr.id} - Nome: {usr.name} - E-mail:{' '}
+                                {usr.email}
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
         </>
     );

@@ -1,0 +1,11 @@
+.btn {
+    padding: 13px 21px;
+}
+
+.btn.btn-default {
+    background-color: #ccc;
+}
+
+.btn.btn-submit {
+    background-color: #fa3;
+}
