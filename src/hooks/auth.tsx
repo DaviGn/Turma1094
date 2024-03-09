@@ -1,6 +1,12 @@
 // criar o contexto
 
-import { createContext, useContext, useMemo, useState } from 'react';
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useMemo,
+    useState
+} from 'react';
 import { User } from '../interfaces/user';
 import { client } from '../network/api';
 
@@ -34,7 +40,7 @@ export default function AuthProvider({
         return userJSON;
     });
 
-    async function signIn({ email, password }: AuthCredentials) {
+    const signIn = useCallback(async ({ email, password }: AuthCredentials) => {
         // isto deveria ocorrer no backend
         // enviando um POST /signin
         // body: { email, password }
@@ -46,22 +52,22 @@ export default function AuthProvider({
 
         localStorage.setItem('user', JSON.stringify(data[0]));
         setUser(data[0]);
-    }
+    }, []);
 
-    function signOut() {
+    const signOut = useCallback(() => {
         localStorage.removeItem('user');
         setUser(null);
-    }
+    }, []);
 
     // memoize
-    const providerData = useMemo(
-        () => ({
+    const providerData = useMemo(() => {
+        console.log('Calculei');
+        return {
             user,
             signIn,
             signOut
-        }),
-        [user]
-    );
+        };
+    }, [user, signIn, signOut]);
 
     return (
         <AuthContext.Provider value={providerData}>
