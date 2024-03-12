@@ -11,6 +11,7 @@
         "backend": "npx json-server db.json --watch"
     },
     "dependencies": {
+        "@tanstack/react-query": "^5.26.3",
         "axios": "^1.6.7",
         "formik": "^2.4.5",
         "react": "^18.2.0",

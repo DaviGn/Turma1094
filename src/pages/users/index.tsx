@@ -1,33 +1,10 @@
-import { useEffect, useState } from 'react';
-import { v4 as uuid } from 'uuid';
-import * as Yup from 'yup';
-
 import Menu from '../../components/layout/menu';
-import Button, { ButtonVariant } from '../../components/button';
-import TextInput from '../../components/form/TextInput';
-import { FormikProvider, useFormik } from 'formik';
-import { User } from '../../interfaces/user';
-import { client } from '../../network/api';
+import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 
-interface CreateUserEntry {
-    name: string;
-    email: string;
-}
-
-const requiredField = 'Campo obrigatório';
-
-const validationSchema = Yup.object().shape({
-    name: Yup.string().required(requiredField),
-    email: Yup.string().required(requiredField).email('E-mail inválido')
-});
-
-function castToUser({ name, email }: CreateUserEntry): User {
-    return {
-        id: uuid(),
-        name,
-        email
-    };
-}
+import { list as listUsers } from '../../network/api/users';
+import { useState } from 'react';
+import { PaginationData } from '../../interfaces/pagination';
 
 // componentDidMount - disparado quando o componente é exibido
 // componentWillMount - quando ia ser exibido em tela
@@ -35,36 +12,15 @@ function castToUser({ name, email }: CreateUserEntry): User {
 // componentWillUnmount - o componete vai ser destruído
 
 export default function Users() {
-    const [isLoading, setIsLoading] = useState(true);
-    const [users, setUsers] = useState<User[]>([]);
-
-    async function loadUsers() {
-        setIsLoading(true);
-        await new Promise((res) => setTimeout(res, 3000));
-        const { data } = await client.get<User[]>('users');
-        setUsers(data);
-        setIsLoading(false);
-    }
-
-    const form = useFormik<CreateUserEntry>({
-        initialValues: {
-            name: '',
-            email: ''
-        },
-        validationSchema,
-        onSubmit: async (values, { resetForm }) => {
-            const newUser = castToUser(values);
-
-            await client.post('users', newUser);
-            resetForm();
-
-            loadUsers();
-        }
+    const [paginationData, setPaginationData] = useState<PaginationData>({
+        page: 1,
+        perPage: 5
     });
 
-    useEffect(() => {
-        loadUsers();
-    }, []);
+    const { data: users, isLoading } = useQuery({
+        queryKey: ['users', paginationData],
+        queryFn: () => listUsers(paginationData)
+    });
 
     // useEffect(() => {
     //     console.log('componentDidMount');
@@ -84,47 +40,41 @@ export default function Users() {
     return (
         <>
             <Menu />
-            <h1>Users</h1>
-            <div>
-                <FormikProvider value={form}>
-                    <TextInput
-                        name="name"
-                        label="Nome"
-                        placeholder="Digite o nome"
-                    />
-                    <TextInput
-                        name="email"
-                        label="E-mail"
-                        placeholder="exemplo@exemplo.com"
-                    />
-                    <div>
-                        <Button
-                            type="button"
-                            variant={ButtonVariant.cancel}
-                            text="Cancelar"
-                            onClick={form.resetForm}
-                        />
-                        <Button
-                            type="button"
-                            variant={ButtonVariant.submit}
-                            text="Salvar"
-                            onClick={form.submitForm}
-                        />
-                    </div>
-                </FormikProvider>
-            </div>
+            <h1>Usuários</h1>
+            <Link to="/users/editor">Novo usuário</Link>
             <div>
                 {isLoading ? (
                     <h3>Carregando...</h3>
                 ) : (
-                    <ul>
-                        {users.map((usr) => (
-                            <li key={usr.id}>
-                                Id: {usr.id} - Nome: {usr.name} - E-mail:{' '}
-                                {usr.email}
-                            </li>
-                        ))}
-                    </ul>
+                    <>
+                        <ul>
+                            {users?.data?.map((usr) => (
+                                <li key={usr.id}>
+                                    Id: {usr.id} - Nome: {usr.name} - E-mail:{' '}
+                                    {usr.email}
+                                </li>
+                            ))}
+                        </ul>
+                        <div>
+                            {[...Array(users?.last).keys()].map((x) => {
+                                const page = x + (users?.first ?? 1);
+
+                                return (
+                                    <button
+                                        key={page}
+                                        onClick={() => {
+                                            setPaginationData((prev) => ({
+                                                ...prev,
+                                                page
+                                            }));
+                                        }}
+                                    >
+                                        {page}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </>
                 )}
             </div>
         </>

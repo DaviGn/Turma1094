@@ -4,6 +4,7 @@ import Home from '../pages/home';
 import Users from '../pages/users';
 import SignIn from '../pages/signin';
 import PrivateRoute from './PrivateRoute';
+import UsersForm from '../pages/users/editor';
 
 const router = createBrowserRouter([
     {
@@ -23,6 +24,14 @@ const router = createBrowserRouter([
         element: (
             <PrivateRoute>
                 <Users />
+            </PrivateRoute>
+        )
+    },
+    {
+        path: '/users/editor',
+        element: (
+            <PrivateRoute>
+                <UsersForm />
             </PrivateRoute>
         )
     }
