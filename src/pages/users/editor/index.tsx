@@ -1,13 +1,13 @@
 import { FormikProvider, useFormik } from 'formik';
-import Menu from '../../components/layout/menu';
-import TextInput from '../../components/form/TextInput';
-import Button, { ButtonVariant } from '../../components/button';
-import { client } from '../../network/api';
+import Menu from '../../../components/layout/menu';
+import TextInput from '../../../components/form/TextInput';
+import Button, { ButtonVariant } from '../../../components/button';
 import { v4 as uuid } from 'uuid';
 import * as Yup from 'yup';
-import { User } from '../../interfaces/user';
-import { useNavigate } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { User } from '../../../interfaces/user';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { create, findById, update } from '../../../network/api/users';
 
 interface CreateUserEntry {
     name: string;
@@ -31,32 +31,52 @@ function castToUser({ name, email, password }: CreateUserEntry): User {
     };
 }
 
+const createUserId = 'new';
+
 export default function UsersForm() {
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    const mutation = useMutation({
+    const isEditing = id !== createUserId;
+
+    const { data: userData } = useQuery({
+        queryKey: ['users', 'item', id],
+        queryFn: () => findById(id!),
+        enabled: id !== createUserId
+    });
+
+    const { mutateAsync } = useMutation({
         mutationFn: async (user: CreateUserEntry) => {
-            const newUser = castToUser(user);
-            await client.post('users', newUser);
+            const userDto = castToUser(user);
+
+            if (!isEditing) {
+                await create(userDto);
+            } else {
+                await update(id!, userDto);
+            }
         },
-        onMutate: () => {
+        onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['users']
             });
             navigate('/users');
+        },
+        onError: () => {
+            alert('Ocorreu um erro');
         }
     });
 
     const form = useFormik<CreateUserEntry>({
-        initialValues: {
+        initialValues: userData ?? {
             name: '',
             email: '',
             password: ''
         },
+        enableReinitialize: true,
         validationSchema,
         onSubmit: async (values) => {
-            mutation.mutate(values);
+            mutateAsync(values);
         }
     });
 
@@ -87,7 +107,9 @@ export default function UsersForm() {
                             type="button"
                             variant={ButtonVariant.cancel}
                             text="Cancelar"
-                            onClick={form.resetForm}
+                            onClick={() => {
+                                navigate('/users');
+                            }}
                         />
                         <Button
                             type="button"

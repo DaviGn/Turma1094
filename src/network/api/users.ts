@@ -20,3 +20,25 @@ export async function list(pagination?: PaginationData) {
     const { data } = await client.get<PaginationResponse<User>>(requestPath);
     return data;
 }
+
+export async function findById(id: string): Promise<User> {
+    const { data } = await client.get<User>(`${path}/${id}`);
+    return data;
+}
+
+export async function findByEmail(email: string): Promise<User[]> {
+    const { data } = await client.get<User[]>(`${path}?email=${email}`);
+    return data;
+}
+
+export async function create(user: User): Promise<void> {
+    await client.post(`${path}`, user);
+}
+
+export async function update(id: string, user: User): Promise<void> {
+    await client.put(`${path}/${id}`, user);
+}
+
+export async function remove(id: string): Promise<void> {
+    await client.delete(`${path}/${id}`);
+}

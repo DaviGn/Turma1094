@@ -119,24 +119,6 @@
       "name": "Tina Adams",
       "email": "tina.adams@example.com",
       "password": "123456"
-    },
-    {
-      "id": "ac3ab168-0b85-4306-8d8c-f0e6b7b99f60",
-      "name": "mateus",
-      "email": "mateus@teste.com",
-      "password": "123456"
-    },
-    {
-      "id": "e99087f7-002f-4be7-95d3-3189f07d57eb",
-      "name": "Davi",
-      "email": "davi@teste.com",
-      "password": "12456"
-    },
-    {
-      "id": "bc7c95d7-d493-4d0e-8129-83f3913df5eb",
-      "name": "Davi 2",
-      "email": "davi2@teste.com",
-      "password": "123456"
     }
   ]
 }

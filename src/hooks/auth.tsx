@@ -8,7 +8,7 @@ import {
     useState
 } from 'react';
 import { User } from '../interfaces/user';
-import { client } from '../network/api';
+import { findByEmail } from '../network/api/users';
 
 interface AuthCredentials {
     email: string;
@@ -44,7 +44,7 @@ export default function AuthProvider({
         // isto deveria ocorrer no backend
         // enviando um POST /signin
         // body: { email, password }
-        const { data } = await client.get<User[]>(`users?email=${email}`);
+        const data = await findByEmail(email);
 
         if (data.length == 0 || data[0].password !== password) {
             throw new Error('Invalid credentials!');
