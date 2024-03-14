@@ -22,7 +22,7 @@ export default function Menu() {
                     Usuários
                 </MenuItem>
             </MenuItemsContainer>
-            <LogoutButton text="Sair" onClick={signOut} />
+            <LogoutButton onClick={signOut}>Sair</LogoutButton>
         </Container>
     );
 }

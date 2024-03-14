@@ -1,35 +1,14 @@
 import { FormikProvider, useFormik } from 'formik';
-import TextInput from '../../../components/form/TextInput';
-import Button, { ButtonVariant } from '../../../components/button';
-import { v4 as uuid } from 'uuid';
-import * as Yup from 'yup';
-import { User } from '../../../interfaces/user';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import TextInput from '../../../components/form/TextInput';
+import Button, { ButtonVariant } from '../../../components/button';
 import { create, findById, update } from '../../../network/api/users';
 import Layout from '../../../components/layout';
-
-interface CreateUserEntry {
-    name: string;
-    email: string;
-    password: string;
-}
-
-const requiredField = 'Campo obrigatório';
-
-const validationSchema = Yup.object().shape({
-    name: Yup.string().required(requiredField),
-    email: Yup.string().required(requiredField).email('E-mail inválido')
-});
-
-function castToUser({ name, email, password }: CreateUserEntry): User {
-    return {
-        id: uuid(),
-        name,
-        email,
-        password
-    };
-}
+import { Header, Title } from '../../../components/layout/commons';
+import { ActionButtonsContainer } from './styles';
+import { CreateUserEntry, castToUser, validationSchema } from './helpers';
 
 const createUserId = 'new';
 
@@ -82,7 +61,9 @@ export default function UsersForm() {
 
     return (
         <Layout>
-            <h1>Novo usuário</h1>
+            <Header>
+                <Title>Novo usuário</Title>
+            </Header>
             <div>
                 <FormikProvider value={form}>
                     <TextInput
@@ -101,21 +82,23 @@ export default function UsersForm() {
                         label="Senha"
                         placeholder="Digite uma senha"
                     />
-                    <div>
+                    <ActionButtonsContainer>
                         <Button
                             type="button"
-                            text="Cancelar"
                             onClick={() => {
                                 navigate('/users');
                             }}
-                        />
+                        >
+                            Cancelar
+                        </Button>
                         <Button
                             type="button"
                             variant={ButtonVariant.submit}
-                            text="Salvar"
                             onClick={form.submitForm}
-                        />
-                    </div>
+                        >
+                            Salvar
+                        </Button>
+                    </ActionButtonsContainer>
                 </FormikProvider>
             </div>
         </Layout>

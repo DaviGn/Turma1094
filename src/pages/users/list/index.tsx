@@ -1,11 +1,20 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { list as listUsers, remove } from '../../../network/api/users';
-import { useState } from 'react';
 import { PaginationData } from '../../../interfaces/pagination';
 import Layout from '../../../components/layout';
 import { ButtonLink, Header, Title } from '../../../components/layout/commons';
+import {
+    ActionsButtonsContainer,
+    Container,
+    DeleteButton,
+    InfoContainer,
+    ListContainer,
+    PaginationContainer,
+    UserContainer
+} from './styles';
+import Button from '../../../components/button';
 
 // componentDidMount - disparado quando o componente é exibido
 // componentWillMount - quando ia ser exibido em tela
@@ -57,43 +66,49 @@ export default function Users() {
                 <Title>Usuários</Title>
                 <ButtonLink to="/users/editor/new">Novo usuário</ButtonLink>
             </Header>
-            <div>
+            <Container>
                 {isLoading ? (
                     <h3>Carregando...</h3>
                 ) : (
                     <>
-                        <div>
+                        <ListContainer>
                             {users?.data?.map((usr) => (
-                                <div
-                                    key={usr.id}
-                                    style={{
-                                        marginBottom: '23px'
-                                    }}
-                                >
-                                    <div>Id: {usr.id}</div>
-                                    <div>Nome: {usr.name}</div>
-                                    <div>E-mail: {usr.email}</div>
-                                    <div>
-                                        <Link to={`/users/editor/${usr.id}`}>
+                                <UserContainer key={usr.id}>
+                                    <InfoContainer>
+                                        <label>Id:</label>
+                                        <p>{usr.id}</p>
+                                    </InfoContainer>
+                                    <InfoContainer>
+                                        <label>Nome:</label>
+                                        <p>{usr.name}</p>
+                                    </InfoContainer>
+                                    <InfoContainer>
+                                        <label>E-mail:</label>
+                                        <p>{usr.email}</p>
+                                    </InfoContainer>
+                                    <ActionsButtonsContainer>
+                                        <ButtonLink
+                                            to={`/users/editor/${usr.id}`}
+                                        >
                                             Editar
-                                        </Link>
-                                        <button
+                                        </ButtonLink>
+                                        <DeleteButton
                                             onClick={() => {
                                                 mutateAsync(usr.id);
                                             }}
                                         >
                                             Apagar
-                                        </button>
-                                    </div>
-                                </div>
+                                        </DeleteButton>
+                                    </ActionsButtonsContainer>
+                                </UserContainer>
                             ))}
-                        </div>
-                        <div>
+                        </ListContainer>
+                        <PaginationContainer>
                             {[...Array(users?.last).keys()].map((x) => {
                                 const page = x + (users?.first ?? 1);
 
                                 return (
-                                    <button
+                                    <Button
                                         key={page}
                                         onClick={() => {
                                             setPaginationData((prev) => ({
@@ -103,13 +118,13 @@ export default function Users() {
                                         }}
                                     >
                                         {page}
-                                    </button>
+                                    </Button>
                                 );
                             })}
-                        </div>
+                        </PaginationContainer>
                     </>
                 )}
-            </div>
+            </Container>
         </Layout>
     );
 }

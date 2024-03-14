@@ -9,10 +9,10 @@ export enum ButtonVariant {
 interface ButtonProps
     extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
     variant?: ButtonVariant;
-    text: string;
+    children: React.ReactNode;
     onClick: () => void;
 }
 
-export default function ButtonComponent({ text, ...rest }: ButtonProps) {
-    return <Button {...rest}>{text}</Button>;
+export default function ButtonComponent({ children, ...rest }: ButtonProps) {
+    return <Button {...rest}>{children}</Button>;
 }

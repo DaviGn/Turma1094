@@ -18,7 +18,10 @@ export const Button = styled.button<ButtonProps>`
         `}
 
     &:hover {
+        cursor: pointer;
         background-color: ${(props) =>
             props.variant !== ButtonVariant.submit ? '#333' : '#228B22'};
+
+        color: #fff;
     }
 `;

@@ -1,9 +1,8 @@
 import { FormikProvider, useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
+
 import Button, { ButtonVariant } from '../../components/button';
 import TextInput from '../../components/form/TextInput';
-import { client } from '../../network/api';
-import { User } from '../../interfaces/user';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/auth';
 
 interface SignInFormEntry {
@@ -52,9 +51,10 @@ export default function SignIn() {
                         <Button
                             type="button"
                             variant={ButtonVariant.submit}
-                            text="Entrar"
                             onClick={form.submitForm}
-                        />
+                        >
+                            Entrar
+                        </Button>
                     </div>
                 </FormikProvider>
             </div>
