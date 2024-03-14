@@ -1,10 +1,11 @@
-import Menu from '../../../components/layout/menu';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { list as listUsers, remove } from '../../../network/api/users';
 import { useState } from 'react';
 import { PaginationData } from '../../../interfaces/pagination';
+import Layout from '../../../components/layout';
+import { ButtonLink, Header, Title } from '../../../components/layout/commons';
 
 // componentDidMount - disparado quando o componente é exibido
 // componentWillMount - quando ia ser exibido em tela
@@ -51,16 +52,11 @@ export default function Users() {
     // });
 
     return (
-        <>
-            <Menu />
-            <h1>Usuários</h1>
-            <div
-                style={{
-                    marginBottom: '23px'
-                }}
-            >
-                <Link to="/users/editor/new">Novo usuário</Link>
-            </div>
+        <Layout>
+            <Header>
+                <Title>Usuários</Title>
+                <ButtonLink to="/users/editor/new">Novo usuário</ButtonLink>
+            </Header>
             <div>
                 {isLoading ? (
                     <h3>Carregando...</h3>
@@ -114,6 +110,6 @@ export default function Users() {
                     </>
                 )}
             </div>
-        </>
+        </Layout>
     );
 }

@@ -1,26 +1,28 @@
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-import './styles.css';
 import { useAuth } from '../../../hooks/auth';
-import Button, { ButtonVariant } from '../../button';
+import {
+    Container,
+    LogoutButton,
+    MenuItem,
+    MenuItemsContainer
+} from './styles';
 
 export default function Menu() {
     const { signOut } = useAuth();
     const { pathname } = useLocation();
 
     return (
-        <div>
-            <Link to="/" className={pathname === '/' ? 'active' : ''}>
-                Home
-            </Link>
-            <Link to="/users" className={pathname === '/users' ? 'active' : ''}>
-                Usuários
-            </Link>
-            <Button
-                text="Sair"
-                variant={ButtonVariant.cancel}
-                onClick={signOut}
-            />
-        </div>
+        <Container>
+            <MenuItemsContainer>
+                <MenuItem to="/" active={pathname === '/'}>
+                    Home
+                </MenuItem>
+                <MenuItem to="/users" active={pathname === '/users'}>
+                    Usuários
+                </MenuItem>
+            </MenuItemsContainer>
+            <LogoutButton text="Sair" onClick={signOut} />
+        </Container>
     );
 }

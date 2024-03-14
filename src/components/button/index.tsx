@@ -1,28 +1,18 @@
 import { ButtonHTMLAttributes } from 'react';
-
-import './styles.css';
+import { Button } from './styles';
 
 export enum ButtonVariant {
-    'submit',
-    'cancel'
+    'default',
+    'submit'
 }
 
 interface ButtonProps
     extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-    variant: ButtonVariant;
+    variant?: ButtonVariant;
     text: string;
     onClick: () => void;
 }
 
-const buttonVariantClassMap = {
-    [ButtonVariant.cancel]: 'btn-default',
-    [ButtonVariant.submit]: 'btn-submit'
-};
-
-export default function Button({ variant, text, ...rest }: ButtonProps) {
-    return (
-        <button className={`btn ${buttonVariantClassMap[variant]}`} {...rest}>
-            {text}
-        </button>
-    );
+export default function ButtonComponent({ text, ...rest }: ButtonProps) {
+    return <Button {...rest}>{text}</Button>;
 }

@@ -1,4 +1,5 @@
-import Menu from '../../components/layout/menu';
+import Layout from '../../components/layout';
+import { Title } from '../../components/layout/commons';
 import { useAuth } from '../../hooks/auth';
 import ProductsWidget from './products';
 import UsersWidget from './users';
@@ -7,12 +8,11 @@ export default function Home() {
     const { user } = useAuth();
 
     return (
-        <>
-            <Menu />
-            <h1>Olá, {user!.name}</h1>
+        <Layout>
+            <Title>Olá, {user!.name}</Title>
 
             <ProductsWidget />
             <UsersWidget />
-        </>
+        </Layout>
     );
 }

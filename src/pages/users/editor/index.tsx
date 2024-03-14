@@ -1,5 +1,4 @@
 import { FormikProvider, useFormik } from 'formik';
-import Menu from '../../../components/layout/menu';
 import TextInput from '../../../components/form/TextInput';
 import Button, { ButtonVariant } from '../../../components/button';
 import { v4 as uuid } from 'uuid';
@@ -8,6 +7,7 @@ import { User } from '../../../interfaces/user';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { create, findById, update } from '../../../network/api/users';
+import Layout from '../../../components/layout';
 
 interface CreateUserEntry {
     name: string;
@@ -81,8 +81,7 @@ export default function UsersForm() {
     });
 
     return (
-        <>
-            <Menu />
+        <Layout>
             <h1>Novo usuário</h1>
             <div>
                 <FormikProvider value={form}>
@@ -105,7 +104,6 @@ export default function UsersForm() {
                     <div>
                         <Button
                             type="button"
-                            variant={ButtonVariant.cancel}
                             text="Cancelar"
                             onClick={() => {
                                 navigate('/users');
@@ -120,6 +118,6 @@ export default function UsersForm() {
                     </div>
                 </FormikProvider>
             </div>
-        </>
+        </Layout>
     );
 }
